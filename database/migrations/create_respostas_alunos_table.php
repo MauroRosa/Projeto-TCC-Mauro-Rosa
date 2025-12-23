@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('respostas_alunos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('aluno_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('questao_id')->constrained('questoes')->onDelete('cascade');
+            $table->foreignId('questionario_id')->constrained('questionarios')->onDelete('cascade');
+            $table->char('resposta_escolhida', 1); // A, B, C, D ou E
+            $table->boolean('correta');
+            $table->enum('familiaridade', ['conheco', 'nao_conheco', 'ja_estudei']);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('respostas_alunos');
+    }
+};

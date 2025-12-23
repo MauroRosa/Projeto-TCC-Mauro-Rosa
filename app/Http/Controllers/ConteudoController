@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Conteudo;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class ConteudoController extends Controller
+{
+    // PROFESSOR - Listar conteúdos
+    public function index()
+    {
+        $conteudos = Conteudo::where('professor_id', auth()->id())
+            ->orderBy('created_at', 'desc')->get();
+        
+        return view('professor.conteudos.index', compact('conteudos'));
+    }
+
+    // PROFESSOR - Criar conteúdo
+    public function create()
+    {
+        return view('professor.conteudos.create');
+    }
+
+    // PROFESSOR - Salvar conteúdo
+    public function store(Request $request)
+    {
+        $validado = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'tipo' => 'required|in:pdf,link,texto',
+            'conteudo' => 'required_if:tipo,texto',
+            'url' => 'required_if:tipo,link|url',
+            'arquivo' => 'required_if:tipo,pdf|file|mimes:pdf|max:10240',
+        ]);
+
+        $arquivo_path = null;
+        if ($request->tipo === 'pdf' && $request->hasFile('arquivo')) {
+            $arquivo_path = $request->file('arquivo')->store('conteudos', 'public');
+        }
+
+        Conteudo::create([
+            'professor_id' => auth()->id(),
+            'titulo' => $validado['titulo'],
+            'tipo' => $validado['tipo'],
+            'conteudo' => $request->conteudo,
+            'url' => $request->url,
+            'arquivo_path' => $arquivo_path,
+        ]);
+
+        return redirect()
+            ->route('professor.conteudos.index')
+            ->with('sucesso', 'Conteúdo adicionado com sucesso!');
+    }
+
+    // PROFESSOR - Excluir conteúdo
+    public function destroy($id)
+    {
+        $conteudo = Conteudo::where('professor_id', auth()->id())->findOrFail($id);
+
+        if ($conteudo->arquivo_path) {
+            Storage::disk('public')->delete($conteudo->arquivo_path);
+        }
+
+        $conteudo->delete();
+
+        return back()->with('sucesso', 'Conteúdo excluído com sucesso!');
+    }
+
+    // ALUNO - Ver conteúdos
+    public function alunoIndex()
+    {
+        $conteudos = Conteudo::orderBy('created_at', 'desc')->get();
+        return view('aluno.conteudos.index', compact('conteudos'));
+    }
+}
