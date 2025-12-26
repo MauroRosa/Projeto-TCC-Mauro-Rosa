@@ -30,7 +30,7 @@
             </div>
             @endif
 
-            <form action="{{ route('cadastrar.post') }}" method="POST">
+            <form action="{{ route('cadastrar') }}" method="POST">
                 @csrf
 
                 <div class="mb-4">

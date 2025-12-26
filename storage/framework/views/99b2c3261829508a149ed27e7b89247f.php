@@ -30,7 +30,7 @@
             </div>
             <?php endif; ?>
 
-            <form action="<?php echo e(route('cadastrar.post')); ?>" method="POST">
+            <form action="<?php echo e(route('cadastrar')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
 
                 <div class="mb-4">
@@ -117,4 +117,4 @@
         </div>
     </div>
 </body>
-</html><?php /**PATH C:\Users\Mauro Rosa\Desktop\tcc-mauro\resources\views/autenticacao/cadastro.blade.php ENDPATH**/ ?>
+</html><?php /**PATH /workspace/resources/views/autenticacao/cadastro.blade.php ENDPATH**/ ?>
